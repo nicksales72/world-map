@@ -300,6 +300,7 @@ const renderCountryProfile = (country) => {
   const borderCount = country.borders?.length ?? 0;
   const statusTags = [
     country.atlas.euMemberSince ? { label: 'EU member', kind: 'eu' } : null,
+    country.atlas.natoMemberSince ? { label: 'NATO member', kind: 'nato' } : null,
     ...(country.atlas.statusTags ?? (country.unMember ? ['UN member'] : [])).map((label) => ({ label })),
     country.landlocked ? { label: 'Landlocked' } : null,
     country.independent ? { label: 'Independent' } : null,

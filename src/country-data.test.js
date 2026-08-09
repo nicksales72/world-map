@@ -12,6 +12,15 @@ test('contains the current 27 EU members', () => {
   assert.equal(country('GBR').atlas.euMemberSince, null);
 });
 
+test('contains the current 32 NATO members', () => {
+  const members = countries.filter((entry) => entry.atlas.natoMemberSince);
+
+  assert.equal(members.length, 32);
+  assert.equal(country('FIN').atlas.natoMemberSince, 2023);
+  assert.equal(country('SWE').atlas.natoMemberSince, 2024);
+  assert.equal(country('AUT').atlas.natoMemberSince, null);
+});
+
 test('applies reviewed current-data corrections', () => {
   assert.deepEqual(Object.keys(country('BGR').currencies), ['EUR']);
   assert.deepEqual(Object.keys(country('CUW').currencies), ['XCG']);

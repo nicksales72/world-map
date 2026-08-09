@@ -32,6 +32,41 @@ const EU_MEMBER_SINCE = new Map([
   ['SWE', 1995],
 ]);
 
+const NATO_MEMBER_SINCE = new Map([
+  ['ALB', 2009],
+  ['BEL', 1949],
+  ['BGR', 2004],
+  ['CAN', 1949],
+  ['HRV', 2009],
+  ['CZE', 1999],
+  ['DNK', 1949],
+  ['EST', 2004],
+  ['FIN', 2023],
+  ['FRA', 1949],
+  ['DEU', 1955],
+  ['GRC', 1952],
+  ['HUN', 1999],
+  ['ISL', 1949],
+  ['ITA', 1949],
+  ['LVA', 2004],
+  ['LTU', 2004],
+  ['LUX', 1949],
+  ['MNE', 2017],
+  ['NLD', 1949],
+  ['MKD', 2020],
+  ['NOR', 1949],
+  ['POL', 1999],
+  ['PRT', 1949],
+  ['ROU', 2004],
+  ['SVK', 2004],
+  ['SVN', 2004],
+  ['ESP', 1982],
+  ['SWE', 2024],
+  ['TUR', 1952],
+  ['GBR', 1949],
+  ['USA', 1949],
+]);
+
 const COUNTRY_OVERRIDES = {
   ATA: {
     atlas: { statusTags: ['Antarctic Treaty area'] },
@@ -329,6 +364,7 @@ export const countries = sourceCountries.map((country) => {
     atlas: {
       ...atlas,
       euMemberSince: EU_MEMBER_SINCE.get(country.cca3) ?? null,
+      natoMemberSince: NATO_MEMBER_SINCE.get(country.cca3) ?? null,
     },
   };
 });
@@ -385,6 +421,10 @@ export const getCountryFacts = (country) => {
         usesEuro ? ' and is one of the 21 EU countries that use the euro.' : '.'
       }`,
     );
+  }
+
+  if (country.atlas.natoMemberSince) {
+    facts.push(`${name} has been a NATO member since ${country.atlas.natoMemberSince}.`);
   }
 
   if (country.independent && country.area > 0) {

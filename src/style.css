@@ -515,6 +515,12 @@ a:focus-visible {
   border-color: rgba(37, 79, 120, 0.3);
 }
 
+.profile-tags .profile-tag--nato {
+  color: #f6f8f7;
+  background: #315f83;
+  border-color: #315f83;
+}
+
 .metric-grid {
   display: grid;
   grid-template-columns: 1.25fr 1fr 1fr;

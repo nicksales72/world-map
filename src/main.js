@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import splitGeoJSON from 'geojson-antimeridian-cut';
 import { feature as toGeoJSON } from 'topojson-client';
 import worldAtlas from 'world-atlas/countries-10m.json';
-import countries from 'world-countries';
+import { countries, formatCallingCode, getCountryFacts } from './country-data.js';
 import './style.css';
 
 const mapElement = document.querySelector('#map');
@@ -21,6 +21,9 @@ const numberFormat = new Intl.NumberFormat('en-US');
 const compactNumberFormat = new Intl.NumberFormat('en-US', {
   notation: 'compact',
   maximumFractionDigits: 1,
+});
+const preciseNumberFormat = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 2,
 });
 
 const normalizeName = (value = '') =>
@@ -116,6 +119,7 @@ let selectedLayer = null;
 let searchableCountries = [];
 let visibleSearchResults = [];
 let activeSearchIndex = -1;
+const countryFactIndexes = new Map();
 
 const lookupCountry = (geoFeature) => {
   const numericCode = String(geoFeature.id ?? '').padStart(3, '0');
@@ -214,7 +218,11 @@ const fitWorld = () => {
   });
 };
 
-const formatArea = (area) => `${numberFormat.format(Math.round(area))} km²`;
+const formatArea = (area) => {
+  if (!Number.isFinite(area) || area <= 0) return 'Not available';
+  const value = area < 100 ? preciseNumberFormat.format(area) : numberFormat.format(Math.round(area));
+  return `${value} km²`;
+};
 
 const formatCoordinate = ([latitude, longitude] = []) => {
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return 'Not available';
@@ -238,34 +246,29 @@ const escapeHTML = (value = '') =>
   );
 
 const formatCurrency = (currencies = {}) => {
-  const values = Object.values(currencies);
-  if (!values.length) return 'Not available';
+  const entries = Object.entries(currencies);
+  if (!entries.length) return 'Not available';
 
-  return values
-    .map(({ name, symbol }) => `${name}${symbol ? ` (${symbol})` : ''}`)
+  return entries
+    .map(([code, { name, symbol }]) => `${name} (${code}${symbol ? `, ${symbol}` : ''})`)
     .join(', ');
 };
 
-const formatCallingCode = (idd = {}) =>
-  idd.root && idd.suffixes?.length ? `${idd.root}${idd.suffixes[0]}` : 'Not available';
+const nextCountryFact = (country) => {
+  const facts = getCountryFacts(country);
+  const index = countryFactIndexes.get(country.cca3) ?? 0;
+  countryFactIndexes.set(country.cca3, (index + 1) % facts.length);
 
-const countryInsight = (country) => {
-  const areaRank = areaRanks.get(country.cca3);
-  const borderCount = country.borders?.length ?? 0;
+  return { text: facts[index], position: index + 1, total: facts.length };
+};
 
-  if (country.landlocked) {
-    return `${country.name.common} is one of the world's landlocked countries, sharing borders with ${borderCount || 'no'} ${borderCount === 1 ? 'neighbor' : 'neighbors'}.`;
-  }
+const showNextCountryFact = (country) => {
+  const fact = nextCountryFact(country);
+  const factText = detailsElement.querySelector('[data-country-fact]');
+  const factCount = detailsElement.querySelector('[data-country-fact-count]');
 
-  if (borderCount === 0 && country.area < 1_000_000) {
-    return `${country.name.common} has no land borders. By land area, it ranks ${areaRank ? `#${areaRank}` : 'among the smaller countries'} worldwide.`;
-  }
-
-  if (areaRank && areaRank <= 10) {
-    return `${country.name.common} is among the world's ten largest sovereign countries by area, currently ranked #${areaRank}.`;
-  }
-
-  return `${country.name.common} spans ${formatArea(country.area)} in ${country.subregion || country.region}${borderCount ? ` and shares a land border with ${borderCount} ${borderCount === 1 ? 'country' : 'countries'}` : ''}.`;
+  if (factText) factText.textContent = fact.text;
+  if (factCount) factCount.textContent = `${fact.position} / ${fact.total}`;
 };
 
 const renderEmptyProfile = () => {
@@ -289,22 +292,30 @@ const renderEmptyProfile = () => {
 
 const renderCountryProfile = (country) => {
   const languageList = Object.values(country.languages ?? {});
-  const languages = languageList.join(', ') || 'Not available';
-  const capital = country.capital?.join(', ') || 'No official capital';
+  const languages = country.atlas.languageSummary ?? (languageList.join(', ') || 'Not available');
+  const languageCount = country.atlas.languageCount ?? (languageList.length || '—');
+  const languageMetricLabel = country.atlas.languageMetricLabel ?? 'Official languages';
+  const capital = country.atlas.capitalLabel ?? (country.capital?.join(', ') || 'No official capital');
   const areaRank = areaRanks.get(country.cca3);
   const borderCount = country.borders?.length ?? 0;
   const statusTags = [
-    country.unMember ? 'UN member' : null,
-    country.landlocked ? 'Landlocked' : null,
-    country.independent ? 'Independent' : null,
+    country.atlas.euMemberSince ? { label: 'EU member', kind: 'eu' } : null,
+    ...(country.atlas.statusTags ?? (country.unMember ? ['UN member'] : [])).map((label) => ({ label })),
+    country.landlocked ? { label: 'Landlocked' } : null,
+    country.independent ? { label: 'Independent' } : null,
   ].filter(Boolean);
   const osmUrl = `https://www.openstreetmap.org/#map=5/${country.latlng[0]}/${country.latlng[1]}`;
+  const hasArea = Number.isFinite(country.area) && country.area > 0;
+  const compactArea = country.area < 100
+    ? preciseNumberFormat.format(country.area)
+    : compactNumberFormat.format(country.area);
+  const fact = nextCountryFact(country);
 
   detailsElement.innerHTML = `
     <article class="profile-card">
       <button class="profile-close" type="button" data-clear-country aria-label="Close country profile">×</button>
       <header class="profile-hero">
-        <div class="profile-flag" role="img" aria-label="${escapeHTML(country.flags?.alt || `Flag of ${country.name.common}`)}">
+        <div class="profile-flag" role="img" aria-label="${escapeHTML(`Flag of ${country.name.common}`)}">
           ${country.flag}
         </div>
         <div class="profile-heading">
@@ -315,14 +326,19 @@ const renderCountryProfile = (country) => {
       </header>
 
       <div class="profile-tags">
-        ${statusTags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join('')}
+        ${statusTags
+          .map(
+            ({ label, kind }) =>
+              `<span${kind ? ` class="profile-tag--${kind}"` : ''}>${escapeHTML(label)}</span>`,
+          )
+          .join('')}
       </div>
 
       <div class="metric-grid">
         <div class="metric metric--wide">
           <span>Area</span>
-          <strong title="${formatArea(country.area)}">${compactNumberFormat.format(country.area)} <i>km²</i></strong>
-          <small>${areaRank ? `World rank #${areaRank}` : 'Total territory'}</small>
+          <strong title="${escapeHTML(formatArea(country.area))}">${hasArea ? compactArea : '—'}${hasArea ? ' <i>km²</i>' : ''}</strong>
+          <small>${areaRank ? `World rank #${areaRank}` : hasArea ? 'Total territory' : 'Area unavailable'}</small>
         </div>
         <div class="metric">
           <span>Neighbors</span>
@@ -331,24 +347,30 @@ const renderCountryProfile = (country) => {
         </div>
         <div class="metric">
           <span>Languages</span>
-          <strong>${languageList.length || '—'}</strong>
-          <small>Official languages</small>
+          <strong>${escapeHTML(languageCount)}</strong>
+          <small title="${escapeHTML(languageMetricLabel)}">${escapeHTML(languageMetricLabel)}</small>
         </div>
       </div>
 
       <dl class="fact-list">
         <div><dt>Capital</dt><dd>${escapeHTML(capital)}</dd></div>
-        <div><dt>Region</dt><dd>${escapeHTML(country.subregion || country.region)}</dd></div>
+        <div><dt>Subregion</dt><dd>${escapeHTML(country.subregion || country.region)}</dd></div>
         <div><dt>Languages</dt><dd>${escapeHTML(languages)}</dd></div>
         <div><dt>Currency</dt><dd>${escapeHTML(formatCurrency(country.currencies))}</dd></div>
-        <div><dt>Calling code</dt><dd>${escapeHTML(formatCallingCode(country.idd))}</dd></div>
+        <div><dt>Calling code</dt><dd>${escapeHTML(formatCallingCode(country))}</dd></div>
         <div><dt>Internet domain</dt><dd>${escapeHTML(country.tld?.join(', ') || 'Not available')}</dd></div>
         <div><dt>Coordinates</dt><dd>${escapeHTML(formatCoordinate(country.latlng))}</dd></div>
       </dl>
 
       <div class="field-note">
-        <span>Field note</span>
-        <p>${escapeHTML(countryInsight(country))}</p>
+        <div class="field-note__heading">
+          <span>Field note <b data-country-fact-count>${fact.position} / ${fact.total}</b></span>
+          <button type="button" data-next-fact aria-label="Show another fact about ${escapeHTML(country.name.common)}">
+            Next note
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 8.5A7 7 0 0 1 18.8 12M17.9 15.5A7 7 0 0 1 5.2 12" /></svg>
+          </button>
+        </div>
+        <p data-country-fact aria-live="polite">${escapeHTML(fact.text)}</p>
       </div>
 
       <a class="map-link" href="${escapeHTML(osmUrl)}" target="_blank" rel="noreferrer">
@@ -360,6 +382,9 @@ const renderCountryProfile = (country) => {
 
   detailsElement.querySelector('[data-clear-country]').addEventListener('click', () => {
     clearSelection();
+  });
+  detailsElement.querySelector('[data-next-fact]').addEventListener('click', () => {
+    showNextCountryFact(country);
   });
 };
 
@@ -437,6 +462,7 @@ const renderSearchResults = (query) => {
         country.name.official,
         country.cca2,
         country.cca3,
+        ...(country.altSpellings ?? []),
         ...(country.capital ?? []),
       ].map(normalizeName);
       const startsWith = names.some((name) => name.startsWith(normalizedQuery));
@@ -490,6 +516,8 @@ const initializeCountries = () => {
         className: 'country-tooltip',
       });
 
+      if (!country) return;
+
       layer.on({
         mouseover: () => {
           mapElement.classList.add('is-hovering-country');
@@ -502,7 +530,7 @@ const initializeCountries = () => {
         click: () => selectCountryLayer(layer),
       });
 
-      if (country) searchableCountries.push({ country, layer });
+      searchableCountries.push({ country, layer });
     },
   }).addTo(map);
 

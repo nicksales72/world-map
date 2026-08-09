@@ -5,5 +5,5 @@ A completely vibecoded (I literally touched no code) interactive world map; it i
 npm install 
 npm run dev
 ```
-![Main ScreenShot](https://imgur.com/5IMyYPE)
-![World Map Fact](https://imgur.com/fIozRMf)
+![Main ScreenShot](images/main.png)
+![World Map Fact](images/fact.png)

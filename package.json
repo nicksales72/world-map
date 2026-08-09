@@ -1,0 +1,21 @@
+{
+  "name": "field-atlas",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "geojson-antimeridian-cut": "^0.1.0",
+    "leaflet": "^1.9.4",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2",
+    "world-countries": "^5.1.0"
+  },
+  "devDependencies": {
+    "vite": "^8.2.1"
+  }
+}

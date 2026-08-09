@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An interactive world atlas with detailed country boundaries and facts."
+    />
+    <meta name="theme-color" content="#123438" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Field Atlas — Interactive World Map</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="World atlas controls">
+        <header class="brand">
+          <a class="brand-mark" href="/" aria-label="Field Atlas home">
+            <svg viewBox="0 0 42 42" aria-hidden="true">
+              <circle cx="21" cy="21" r="17.5" />
+              <path d="M21 7.5v27M7.5 21h27" />
+              <path class="brand-mark__needle" d="m25.8 12.4-2.4 10.9-7.2 6.3 2.4-10.9 7.2-6.3Z" />
+            </svg>
+            <span>Field Atlas</span>
+          </a>
+          <span class="edition">No. 01 / World</span>
+        </header>
+
+        <section class="intro">
+          <p class="eyebrow">Interactive reference</p>
+          <h1>Explore the world,<br /><em>one border at a time.</em></h1>
+          <p class="intro__copy">
+            Search, scroll, or choose a country to uncover the details behind the shape.
+          </p>
+        </section>
+
+        <section class="search-section" aria-label="Find a country">
+          <label for="country-search">Find a place</label>
+          <div class="search-wrap" id="search-wrap">
+            <div class="search-input">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5" />
+                <path d="m16 16 4 4" />
+              </svg>
+              <input
+                id="country-search"
+                type="search"
+                placeholder="Country, capital, or code"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="search-results"
+                aria-expanded="false"
+                disabled
+              />
+              <kbd aria-hidden="true">/</kbd>
+            </div>
+            <div id="search-results" class="search-results" role="listbox" hidden></div>
+          </div>
+          <div class="quick-actions">
+            <button class="text-button" id="random-country" type="button" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3.5 7h2.2c4.8 0 5.8 10 10.7 10h4.1" />
+                <path d="m17.5 14 3 3-3 3M17.5 4l3 3-3 3" />
+                <path d="M3.5 17h2.2c2.2 0 3.7-2.1 5.1-4.4M13.1 8.8c1-1.1 2-1.8 3.3-1.8h4.1" />
+              </svg>
+              Surprise me
+            </button>
+            <button class="text-button" id="show-world" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M3.8 12h16.4M12 3.5c2.3 2.3 3.5 5.1 3.5 8.5s-1.2 6.2-3.5 8.5M12 3.5C9.7 5.8 8.5 8.6 8.5 12s1.2 6.2 3.5 8.5" />
+              </svg>
+              World view
+            </button>
+          </div>
+        </section>
+
+        <div class="section-rule" aria-hidden="true">
+          <span>Country profile</span>
+          <span id="country-count">Loading borders…</span>
+        </div>
+
+        <section id="country-details" class="country-details" aria-live="polite">
+          <div class="empty-profile">
+            <div class="empty-profile__globe" aria-hidden="true">
+              <svg viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="31" />
+                <path d="M9 40h62M40 9c9 9 14 19.3 14 31S49 62 40 71M40 9c-9 9-14 19.3-14 31S31 62 40 71" />
+                <path d="M17 22.5c6.5 4 14.1 6 23 6s16.5-2 23-6M17 57.5c6.5-4 14.1-6 23-6s16.5 2 23 6" />
+              </svg>
+              <span>01</span>
+            </div>
+            <div>
+              <h2>Choose anywhere</h2>
+              <p>Click a country on the map or use search to open its field notes.</p>
+            </div>
+          </div>
+        </section>
+
+        <footer class="source-note">
+          <span class="source-note__dot" aria-hidden="true"></span>
+          <p>
+            Selection boundaries: Natural Earth 1:10m. Map detail: OpenStreetMap.
+            Disputed borders may be represented differently by other sources.
+          </p>
+        </footer>
+      </aside>
+
+      <main class="map-shell" aria-label="Interactive map area">
+        <div id="map" role="application" aria-label="Zoomable world map"></div>
+
+        <div class="map-caption" aria-live="polite">
+          <span class="map-caption__pulse" aria-hidden="true"></span>
+          <span id="map-status">Preparing atlas</span>
+          <span class="map-caption__divider" aria-hidden="true"></span>
+          <span id="zoom-status">Zoom —</span>
+        </div>
+
+        <div class="map-tools" aria-label="Map controls">
+          <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+          <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button>
+          <span aria-hidden="true"></span>
+          <button id="reset-map" type="button" aria-label="Reset world view" title="Reset world view">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9V4h5M20 15v5h-5" />
+              <path d="M5.8 17.5a8 8 0 0 0 13-2.5M18.2 6.5A8 8 0 0 0 5.2 9" />
+            </svg>
+          </button>
+        </div>
+
+        <div id="map-loading" class="map-loading" role="status">
+          <span class="map-loading__compass" aria-hidden="true"></span>
+          <span>Drawing national borders…</span>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

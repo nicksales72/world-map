@@ -137,10 +137,10 @@ const waterBoundaryLayer = L.layerGroup(
   oceanBoundaryLines.map(({ coordinates }) =>
     L.polyline(coordinates, {
       pane: 'waterBoundaries',
-      color: '#496f74',
+      color: '#c9563f',
       weight: 1,
-      opacity: 0.3,
-      dashArray: '2 6',
+      opacity: 0.34,
+      dashArray: '2 7',
       interactive: false,
     }),
   ),

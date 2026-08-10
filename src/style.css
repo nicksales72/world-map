@@ -909,6 +909,7 @@ a:focus-visible {
 }
 
 .map-tools .map-tools__guide-line {
+  stroke: var(--coral);
   stroke-dasharray: 2 2;
 }
 

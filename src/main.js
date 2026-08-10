@@ -4,6 +4,7 @@ import splitGeoJSON from 'geojson-antimeridian-cut';
 import { feature as toGeoJSON } from 'topojson-client';
 import worldAtlas from 'world-atlas/countries-10m.json';
 import { countries, formatCallingCode, getCountryFacts } from './country-data.js';
+import { oceanBoundaryLines, waterLabels } from './water-data.js';
 import './style.css';
 
 const mapElement = document.querySelector('#map');
@@ -16,6 +17,7 @@ const randomButton = document.querySelector('#random-country');
 const countryCount = document.querySelector('#country-count');
 const mapStatus = document.querySelector('#map-status');
 const zoomStatus = document.querySelector('#zoom-status');
+const waterBoundariesButton = document.querySelector('#toggle-water-boundaries');
 
 const numberFormat = new Intl.NumberFormat('en-US');
 const compactNumberFormat = new Intl.NumberFormat('en-US', {
@@ -94,6 +96,14 @@ map.createPane('labels');
 map.getPane('labels').style.zIndex = 450;
 map.getPane('labels').style.pointerEvents = 'none';
 
+map.createPane('waterBoundaries');
+map.getPane('waterBoundaries').style.zIndex = 390;
+map.getPane('waterBoundaries').style.pointerEvents = 'none';
+
+map.createPane('waterLabels');
+map.getPane('waterLabels').style.zIndex = 460;
+map.getPane('waterLabels').style.pointerEvents = 'none';
+
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
   subdomains: 'abcd',
   maxZoom: 20,
@@ -122,6 +132,63 @@ L.polyline(
     interactive: false,
   },
 ).addTo(map);
+
+const waterBoundaryLayer = L.layerGroup(
+  oceanBoundaryLines.map(({ coordinates }) =>
+    L.polyline(coordinates, {
+      pane: 'waterBoundaries',
+      color: '#496f74',
+      weight: 1,
+      opacity: 0.3,
+      dashArray: '2 6',
+      interactive: false,
+    }),
+  ),
+);
+
+const setWaterBoundariesVisible = (isVisible) => {
+  if (isVisible) {
+    waterBoundaryLayer.addTo(map);
+  } else {
+    waterBoundaryLayer.removeFrom(map);
+  }
+
+  waterBoundariesButton.setAttribute('aria-pressed', String(isVisible));
+  waterBoundariesButton.setAttribute(
+    'aria-label',
+    `${isVisible ? 'Hide' : 'Show'} ocean boundary guides`,
+  );
+  waterBoundariesButton.title = `${isVisible ? 'Hide' : 'Show'} ocean boundary guides`;
+};
+
+const waterLabelMarkers = waterLabels.map(({ name, position, kind, minZoom = 1 }) => ({
+  minZoom,
+  marker: L.marker(position, {
+    pane: 'waterLabels',
+    interactive: false,
+    keyboard: false,
+    icon: L.divIcon({
+      className: `water-label water-label--${kind}`,
+      html: `<span>${name}</span>`,
+      iconSize: [0, 0],
+    }),
+  }),
+}));
+
+const updateWaterLabels = () => {
+  const zoom = map.getZoom();
+
+  for (const { marker, minZoom } of waterLabelMarkers) {
+    const shouldShow = zoom >= minZoom;
+    const isVisible = map.hasLayer(marker);
+
+    if (shouldShow && !isVisible) marker.addTo(map);
+    if (!shouldShow && isVisible) marker.removeFrom(map);
+  }
+};
+
+setWaterBoundariesVisible(true);
+updateWaterLabels();
 
 const worldBounds = L.latLngBounds([
   [-72, -177],
@@ -618,10 +685,14 @@ document.querySelector('#show-world').addEventListener('click', () => {
 document.querySelector('#reset-map').addEventListener('click', fitWorld);
 document.querySelector('#zoom-in').addEventListener('click', () => map.zoomIn());
 document.querySelector('#zoom-out').addEventListener('click', () => map.zoomOut());
+waterBoundariesButton.addEventListener('click', () => {
+  setWaterBoundariesVisible(!map.hasLayer(waterBoundaryLayer));
+});
 
 map.on('zoom moveend', () => {
   zoomStatus.textContent = `Zoom ${map.getZoom().toFixed(2).replace(/\.00$/, '')}`;
 });
+map.on('zoomend', updateWaterLabels);
 
 window.addEventListener('resize', () => {
   map.invalidateSize({ pan: false });

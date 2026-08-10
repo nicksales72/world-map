@@ -101,8 +101,9 @@
         <footer class="source-note">
           <span class="source-note__dot" aria-hidden="true"></span>
           <p>
-            Boundaries: Natural Earth 1:10m. Country data reviewed August 2026.
-            Disputed borders may be represented differently by other sources.
+            Land boundaries: Natural Earth 1:10m. Water divisions: conventional IHO guides,
+            not legal boundaries. Country data reviewed August 2026. Disputed borders may be
+            represented differently by other sources.
           </p>
         </footer>
       </aside>
@@ -125,6 +126,19 @@
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 9V4h5M20 15v5h-5" />
               <path d="M5.8 17.5a8 8 0 0 0 13-2.5M18.2 6.5A8 8 0 0 0 5.2 9" />
+            </svg>
+          </button>
+          <span aria-hidden="true"></span>
+          <button
+            id="toggle-water-boundaries"
+            type="button"
+            aria-label="Hide ocean boundary guides"
+            aria-pressed="true"
+            title="Hide ocean boundary guides"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6.5h5l3 3h8M4 17.5h5l3-3h8" />
+              <path class="map-tools__guide-line" d="M12 3v18" />
             </svg>
           </button>
         </div>

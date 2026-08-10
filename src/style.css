@@ -779,6 +779,42 @@ a:focus-visible {
   border-top-color: #153639 !important;
 }
 
+.water-label {
+  background: transparent;
+  border: 0;
+  pointer-events: none;
+}
+
+.water-label span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: rgba(38, 76, 80, 0.5);
+  text-align: center;
+  text-shadow:
+    0 1px 0 rgba(238, 242, 239, 0.9),
+    0 0 5px rgba(238, 242, 239, 0.96);
+  text-transform: uppercase;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.water-label--ocean span {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 10px;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+}
+
+.water-label--sea span {
+  color: rgba(46, 82, 85, 0.57);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+}
+
 .map-caption {
   position: absolute;
   z-index: 500;
@@ -825,7 +861,7 @@ a:focus-visible {
   top: 20px;
   right: 22px;
   display: grid;
-  grid-template-columns: 36px 36px 1px 36px;
+  grid-template-columns: 36px 36px 1px 36px 1px 36px;
   height: 36px;
   overflow: hidden;
   background: rgba(243, 238, 226, 0.9);
@@ -851,6 +887,11 @@ a:focus-visible {
   background: var(--ink);
 }
 
+.map-tools button[aria-pressed="true"] {
+  color: #fff7e9;
+  background: var(--ink);
+}
+
 .map-tools > span {
   width: 1px;
   height: 18px;
@@ -865,6 +906,10 @@ a:focus-visible {
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.5;
+}
+
+.map-tools .map-tools__guide-line {
+  stroke-dasharray: 2 2;
 }
 
 .map-loading {
@@ -1087,7 +1132,7 @@ a:focus-visible {
   }
 
   .map-caption {
-    max-width: calc(100vw - 170px);
+    max-width: calc(100vw - 208px);
   }
 
   #map-status {

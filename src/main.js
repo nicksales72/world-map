@@ -109,6 +109,20 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.
 
 map.attributionControl.setPrefix(false);
 
+L.polyline(
+  [
+    [0, -180],
+    [0, 180],
+  ],
+  {
+    color: '#587377',
+    weight: 1,
+    opacity: 0.24,
+    dashArray: '3 6',
+    interactive: false,
+  },
+).addTo(map);
+
 const worldBounds = L.latLngBounds([
   [-72, -177],
   [82, 177],

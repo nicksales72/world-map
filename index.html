@@ -118,6 +118,52 @@
           <span id="zoom-status">Zoom —</span>
         </div>
 
+        <label class="war-layer-control" for="war-layer-select">
+          <span class="war-layer-control__label">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 20V4M5 5.5c4-2.3 7 2.2 14-.4v9c-7 2.6-10-1.9-14 .4" />
+            </svg>
+            War layer
+          </span>
+          <span class="war-layer-control__select">
+            <select id="war-layer-select" aria-controls="war-dossier" disabled>
+              <option value="">Off</option>
+            </select>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 9 5 5 5-5" /></svg>
+          </span>
+        </label>
+
+        <aside id="war-dossier" class="war-dossier" aria-labelledby="war-dossier-title" hidden>
+          <header class="war-dossier__header">
+            <div>
+              <p>Historical overlay <span id="war-dossier-period"></span></p>
+              <h2 id="war-dossier-title"></h2>
+            </div>
+            <div class="war-dossier__actions">
+              <button
+                id="toggle-war-dossier"
+                type="button"
+                aria-label="Minimize historical overlay"
+                aria-controls="war-dossier-body"
+                aria-expanded="true"
+                title="Minimize historical overlay"
+              >
+                <span id="war-dossier-toggle-icon" aria-hidden="true">−</span>
+              </button>
+              <button id="close-war-layer" type="button" aria-label="Turn off war layer">×</button>
+            </div>
+          </header>
+          <div id="war-dossier-body" class="war-dossier__body">
+            <p id="war-dossier-summary" class="war-dossier__summary"></p>
+            <div id="war-legend" class="war-legend" aria-label="Belligerent sides"></div>
+            <div id="war-fact" class="war-fact" aria-live="polite"></div>
+            <footer class="war-dossier__footer">
+              <span>Present-day borders are approximate historical proxies.</span>
+              <a id="war-source" href="#" target="_blank" rel="noreferrer">Sources ↗</a>
+            </footer>
+          </div>
+        </aside>
+
         <div class="map-tools" aria-label="Map controls">
           <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
           <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button>

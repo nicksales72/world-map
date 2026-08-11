@@ -5,6 +5,7 @@ import { feature as toGeoJSON } from 'topojson-client';
 import worldAtlas from 'world-atlas/countries-10m.json';
 import { countries, formatCallingCode, getCountryFacts } from './country-data.js';
 import { oceanBoundaryLines, waterLabels } from './water-data.js';
+import { getMajorWar, majorWars } from './war-data.js';
 import './style.css';
 
 const mapElement = document.querySelector('#map');
@@ -18,6 +19,17 @@ const countryCount = document.querySelector('#country-count');
 const mapStatus = document.querySelector('#map-status');
 const zoomStatus = document.querySelector('#zoom-status');
 const waterBoundariesButton = document.querySelector('#toggle-water-boundaries');
+const warLayerSelect = document.querySelector('#war-layer-select');
+const warDossier = document.querySelector('#war-dossier');
+const warDossierTitle = document.querySelector('#war-dossier-title');
+const warDossierPeriod = document.querySelector('#war-dossier-period');
+const warDossierSummary = document.querySelector('#war-dossier-summary');
+const warLegend = document.querySelector('#war-legend');
+const warFact = document.querySelector('#war-fact');
+const warSource = document.querySelector('#war-source');
+const toggleWarDossierButton = document.querySelector('#toggle-war-dossier');
+const warDossierToggleIcon = document.querySelector('#war-dossier-toggle-icon');
+const closeWarLayerButton = document.querySelector('#close-war-layer');
 
 const numberFormat = new Intl.NumberFormat('en-US');
 const compactNumberFormat = new Intl.NumberFormat('en-US', {
@@ -200,6 +212,8 @@ let selectedLayer = null;
 let searchableCountries = [];
 let visibleSearchResults = [];
 let activeSearchIndex = -1;
+let activeWar = null;
+let isWarDossierMinimized = false;
 const countryFactIndexes = new Map();
 
 const lookupCountry = (geoFeature) => {
@@ -215,13 +229,43 @@ const lookupCountry = (geoFeature) => {
   );
 };
 
-const baseStyle = () => ({
+const defaultStyle = {
   color: '#587377',
   weight: 0.7,
   opacity: 0.82,
   fillColor: '#e0a93d',
   fillOpacity: 0.025,
-});
+  dashArray: null,
+};
+
+const warMutedStyle = {
+  color: '#738785',
+  weight: 0.55,
+  opacity: 0.34,
+  fillColor: '#d6ddd8',
+  fillOpacity: 0.035,
+  dashArray: null,
+};
+
+const getWarParticipant = (country) =>
+  country && activeWar ? activeWar.participants[country.cca3] ?? null : null;
+
+const baseStyle = (geoFeature) => {
+  if (!activeWar) return { ...defaultStyle };
+
+  const participant = getWarParticipant(lookupCountry(geoFeature));
+  if (!participant) return { ...warMutedStyle };
+
+  const side = activeWar.sides[participant.side];
+  return {
+    color: side.borderColor,
+    weight: 1.15,
+    opacity: 1,
+    fillColor: side.color,
+    fillOpacity: 0.5,
+    dashArray: side.dashArray,
+  };
+};
 
 const hoverStyle = {
   color: '#c9563f',
@@ -229,6 +273,16 @@ const hoverStyle = {
   opacity: 1,
   fillColor: '#ec7659',
   fillOpacity: 0.16,
+  dashArray: null,
+};
+
+const warMutedHoverStyle = {
+  color: '#536d6d',
+  weight: 1.1,
+  opacity: 0.8,
+  fillColor: '#bcc8c3',
+  fillOpacity: 0.17,
+  dashArray: null,
 };
 
 const selectedStyle = {
@@ -237,6 +291,58 @@ const selectedStyle = {
   opacity: 1,
   fillColor: '#e56649',
   fillOpacity: 0.28,
+  dashArray: null,
+};
+
+const getHoverCountryStyle = (country) => {
+  if (!activeWar) return hoverStyle;
+
+  const participant = getWarParticipant(country);
+  if (!participant) return warMutedHoverStyle;
+
+  return {
+    color: '#153639',
+    weight: 1.8,
+    opacity: 1,
+    fillColor: activeWar.sides[participant.side].color,
+    fillOpacity: 0.66,
+    dashArray: activeWar.sides[participant.side].dashArray,
+  };
+};
+
+const getSelectedCountryStyle = (country) => {
+  if (!activeWar) return selectedStyle;
+
+  const participant = getWarParticipant(country);
+  if (!participant) {
+    return {
+      color: '#153639',
+      weight: 2.1,
+      opacity: 1,
+      fillColor: '#aabbb5',
+      fillOpacity: 0.3,
+      dashArray: null,
+    };
+  }
+
+  return {
+    color: '#153639',
+    weight: 2.25,
+    opacity: 1,
+    fillColor: activeWar.sides[participant.side].color,
+    fillOpacity: 0.7,
+    dashArray: activeWar.sides[participant.side].dashArray,
+  };
+};
+
+const refreshCountryStyles = () => {
+  if (!countryLayer) return;
+
+  countryLayer.setStyle(baseStyle);
+  if (selectedLayer?.countryData) {
+    selectedLayer.setStyle(getSelectedCountryStyle(selectedLayer.countryData));
+    selectedLayer.bringToFront();
+  }
 };
 
 const prepareBoundaryGeometry = (geoData) => {
@@ -325,6 +431,117 @@ const escapeHTML = (value = '') =>
         '"': '&quot;',
       })[character],
   );
+
+const getMapStatus = () =>
+  selectedLayer?.countryData?.name.common ?? activeWar?.name ?? 'World view';
+
+const getCountryTooltipContent = (country, fallbackName) => {
+  const name = country?.name.common ?? fallbackName;
+  const participant = getWarParticipant(country);
+  if (!participant) return escapeHTML(name);
+
+  const alignment = participant.alignment ?? activeWar.sides[participant.side].label;
+  return `<span>${escapeHTML(name)}</span><small>${escapeHTML(alignment)}</small>`;
+};
+
+const setWarDossierMinimized = (isMinimized) => {
+  isWarDossierMinimized = isMinimized;
+  warDossier.classList.toggle('is-minimized', isMinimized);
+  toggleWarDossierButton.setAttribute('aria-expanded', String(!isMinimized));
+
+  const label = `${isMinimized ? 'Restore' : 'Minimize'} historical overlay`;
+  toggleWarDossierButton.setAttribute('aria-label', label);
+  toggleWarDossierButton.title = label;
+  warDossierToggleIcon.textContent = isMinimized ? '+' : '−';
+};
+
+const renderWarDossier = () => {
+  if (!activeWar) {
+    warDossier.hidden = true;
+    return;
+  }
+
+  warDossier.hidden = false;
+  warDossierTitle.textContent = activeWar.name;
+  warDossierPeriod.textContent = `· ${activeWar.period}`;
+  warDossierSummary.textContent = activeWar.summary;
+  warSource.href = activeWar.source.url;
+  warSource.title = activeWar.source.label;
+  warSource.setAttribute('aria-label', `${activeWar.source.label} (opens in a new tab)`);
+
+  warLegend.innerHTML = Object.values(activeWar.sides)
+    .map(
+      (side) => `
+        <span>
+          <i
+            class="war-legend__swatch war-legend__swatch--${escapeHTML(side.pattern)}"
+            style="--war-color: ${escapeHTML(side.color)}"
+            aria-hidden="true"
+          ></i>
+          ${escapeHTML(side.label)}
+        </span>
+      `,
+    )
+    .join('');
+
+  const country = selectedLayer?.countryData;
+  if (!country) {
+    warFact.className = 'war-fact war-fact--empty';
+    warFact.innerHTML = `
+      <p class="war-fact__kicker">Participant note</p>
+      <h3>Choose a highlighted country</h3>
+      <p>Click a highlighted country to see when it entered ${escapeHTML(activeWar.name)} and what role it played.</p>
+    `;
+    return;
+  }
+
+  const participant = getWarParticipant(country);
+  if (!participant) {
+    warFact.className = 'war-fact war-fact--empty';
+    warFact.innerHTML = `
+      <p class="war-fact__kicker">Not highlighted</p>
+      <h3>${escapeHTML(country.name.common)}</h3>
+      <p>This country is not among the principal participants included in this ${escapeHTML(activeWar.name)} layer.</p>
+    `;
+    return;
+  }
+
+  const side = activeWar.sides[participant.side];
+  const alignment = participant.alignment ?? side.label;
+  warFact.className = 'war-fact';
+  warFact.innerHTML = `
+    <p class="war-fact__kicker">
+      <i style="--war-color: ${escapeHTML(side.color)}" aria-hidden="true"></i>
+      ${escapeHTML(alignment)}
+    </p>
+    <div class="war-fact__country">
+      <span aria-hidden="true">${escapeHTML(country.flag)}</span>
+      <div>
+        <h3>${escapeHTML(country.name.common)}</h3>
+        <p>${escapeHTML(participant.entity)}</p>
+      </div>
+    </div>
+    <dl>
+      <div><dt>Entered</dt><dd>${escapeHTML(participant.joined)}</dd></div>
+      <div><dt>Entry</dt><dd>${escapeHTML(participant.entry)}</dd></div>
+      <div><dt>Role</dt><dd>${escapeHTML(participant.role)}</dd></div>
+    </dl>
+  `;
+};
+
+const setWarLayer = (warId) => {
+  activeWar = getMajorWar(warId);
+  if (!activeWar) setWarDossierMinimized(false);
+  warLayerSelect.value = activeWar?.id ?? '';
+  document.body.classList.toggle('has-war-layer', Boolean(activeWar));
+  refreshCountryStyles();
+  for (const { country, layer } of searchableCountries) {
+    layer.setTooltipContent(getCountryTooltipContent(country, country.name.common));
+  }
+  renderWarDossier();
+  mapStatus.textContent = getMapStatus();
+  if (activeWar && countryLayer) fitWorld();
+};
 
 const formatCurrency = (currencies = {}) => {
   const entries = Object.entries(currencies);
@@ -483,7 +700,8 @@ const clearSelection = () => {
   }
 
   renderEmptyProfile();
-  mapStatus.textContent = 'World view';
+  renderWarDossier();
+  mapStatus.textContent = getMapStatus();
   document.body.classList.remove('has-selection');
 };
 
@@ -496,9 +714,10 @@ const selectCountryLayer = (layer, shouldMoveMap = true) => {
   }
 
   selectedLayer = layer;
-  layer.setStyle(selectedStyle);
+  layer.setStyle(getSelectedCountryStyle(country));
   layer.bringToFront();
   renderCountryProfile(country);
+  renderWarDossier();
   closeSearchResults();
   searchInput.value = '';
   mapStatus.textContent = country.name.common;
@@ -603,7 +822,8 @@ const initializeCountries = () => {
       layer.on({
         mouseover: () => {
           mapElement.classList.add('is-hovering-country');
-          if (layer !== selectedLayer) layer.setStyle(hoverStyle);
+          layer.setTooltipContent(getCountryTooltipContent(country, displayName));
+          if (layer !== selectedLayer) layer.setStyle(getHoverCountryStyle(country));
         },
         mouseout: () => {
           mapElement.classList.remove('is-hovering-country');
@@ -627,10 +847,18 @@ const initializeCountries = () => {
   mapStatus.textContent = 'World view';
   searchInput.disabled = false;
   randomButton.disabled = false;
+  warLayerSelect.disabled = false;
   loadingElement.classList.add('is-hidden');
   window.setTimeout(() => loadingElement.remove(), 350);
   fitWorld();
 };
+
+for (const war of majorWars) {
+  const option = document.createElement('option');
+  option.value = war.id;
+  option.textContent = `${war.name} · ${war.years}`;
+  warLayerSelect.append(option);
+}
 
 searchInput.addEventListener('input', (event) => renderSearchResults(event.target.value));
 searchInput.addEventListener('keydown', (event) => {
@@ -650,7 +878,10 @@ searchInput.addEventListener('keydown', (event) => {
     selectCountryLayer(result.layer);
   }
 
-  if (event.key === 'Escape') closeSearchResults();
+  if (event.key === 'Escape') {
+    event.stopPropagation();
+    closeSearchResults();
+  }
 });
 
 searchResults.addEventListener('click', (event) => {
@@ -669,7 +900,13 @@ document.addEventListener('keydown', (event) => {
     searchInput.focus();
   }
 
-  if (event.key === 'Escape' && searchResults.hidden && selectedLayer) clearSelection();
+  if (event.key === 'Escape' && searchResults.hidden) {
+    if (selectedLayer) clearSelection();
+    else if (activeWar) {
+      setWarLayer('');
+      warLayerSelect.focus();
+    }
+  }
 });
 
 randomButton.addEventListener('click', () => {
@@ -687,6 +924,14 @@ document.querySelector('#zoom-in').addEventListener('click', () => map.zoomIn())
 document.querySelector('#zoom-out').addEventListener('click', () => map.zoomOut());
 waterBoundariesButton.addEventListener('click', () => {
   setWaterBoundariesVisible(!map.hasLayer(waterBoundaryLayer));
+});
+warLayerSelect.addEventListener('change', (event) => setWarLayer(event.target.value));
+toggleWarDossierButton.addEventListener('click', () => {
+  setWarDossierMinimized(!isWarDossierMinimized);
+});
+closeWarLayerButton.addEventListener('click', () => {
+  setWarLayer('');
+  warLayerSelect.focus();
 });
 
 map.on('zoom moveend', () => {

@@ -20,7 +20,7 @@ const warDefinitions = [
     years: '1914–1918',
     period: '28 July 1914 – 11 November 1918',
     summary:
-      'Principal sovereign belligerents are shown; dominions, colonies, and smaller belligerents are not exhaustive.',
+      'Principal belligerents and major imperial contributors are shown. Present-day polygons are proxies for 1914 borders; smaller belligerents and colonial forces are not exhaustive.',
     sides: {
       allies: {
         label: 'Entente & associates',
@@ -55,6 +55,15 @@ const warDefinitions = [
         entry: 'Serbia became a belligerent when Austria-Hungary declared war on it.',
         role:
           'Its army resisted the opening invasions, withdrew into exile, and later returned on the Macedonian Front.',
+      },
+      {
+        countries: ['MNE'],
+        entity: 'Kingdom of Montenegro',
+        side: 'allies',
+        joined: '1 August 1914',
+        entry: 'Montenegro joined Serbia and Russia against Austria-Hungary.',
+        role:
+          'Its army fought Austria-Hungary and covered Serbia’s retreat before Montenegro was occupied in 1916.',
       },
       {
         countries: ['DEU'],
@@ -94,12 +103,59 @@ const warDefinitions = [
       },
       {
         countries: ['GBR'],
-        entity: 'United Kingdom & British Empire',
+        entity: 'United Kingdom',
         side: 'allies',
         joined: '4 August 1914',
         entry: 'Britain declared war on Germany after the invasion of Belgium.',
         role:
           'It mobilized imperial land forces and used the Royal Navy to sustain a global war and blockade.',
+      },
+      {
+        countries: ['AUS'],
+        entity: 'Commonwealth of Australia',
+        side: 'allies',
+        joined: '4 August 1914',
+        entry: 'Britain’s declaration of war automatically placed Australia at war with Germany.',
+        role:
+          'Australian forces fought in the Pacific, at Gallipoli, in the Middle East, and on the Western Front.',
+      },
+      {
+        countries: ['CAN'],
+        entity: 'Dominions of Canada & Newfoundland',
+        side: 'allies',
+        joined: '4 August 1914',
+        entry:
+          'Britain’s declaration of war automatically placed Canada and the separate Dominion of Newfoundland at war.',
+        role:
+          'Canada fielded the Canadian Expeditionary Force, while Newfoundland also sent forces to Gallipoli and the Western Front.',
+      },
+      {
+        countries: ['NZL'],
+        entity: 'Dominion of New Zealand',
+        side: 'allies',
+        joined: '4 August 1914',
+        entry: 'Britain’s declaration of war automatically placed New Zealand at war with Germany.',
+        role:
+          'New Zealand occupied German Samoa and fought at Gallipoli, on the Western Front, and in Sinai-Palestine.',
+      },
+      {
+        countries: ['ZAF'],
+        entity: 'Union of South Africa',
+        side: 'allies',
+        joined: '4 August 1914',
+        entry: 'Britain’s declaration placed South Africa at war; its government approved active service.',
+        role:
+          'South African forces conquered German South West Africa and served in East Africa, Egypt, and Europe.',
+      },
+      {
+        countries: ['IND', 'PAK', 'BGD', 'MMR'],
+        entity: 'British India',
+        side: 'allies',
+        joined: '4 August 1914',
+        entry:
+          'British India entered with the British Empire; these polygons approximate its 1914 territory.',
+        role:
+          'About 1.5 million Indian Army personnel served in Europe, Africa, Gallipoli, and the Middle East.',
       },
       {
         countries: ['JPN'],
@@ -129,6 +185,15 @@ const warDefinitions = [
           'It opened the Italian Front and later fought elsewhere in Europe and the Mediterranean.',
       },
       {
+        countries: ['PRT'],
+        entity: 'Portuguese Republic',
+        side: 'allies',
+        joined: '9 March 1916',
+        entry: 'Germany declared war after Portugal seized German ships at Britain’s request.',
+        role:
+          'Portugal fought German forces in Africa and sent an expeditionary corps to the Western Front.',
+      },
+      {
         countries: ['BGR'],
         entity: 'Kingdom of Bulgaria',
         side: 'central',
@@ -145,6 +210,15 @@ const warDefinitions = [
         entry: 'Romania declared war on Austria-Hungary and invaded Transylvania.',
         role:
           'Much of Romania was occupied after a counteroffensive, but it re-entered combat near the war’s end.',
+      },
+      {
+        countries: ['GRC'],
+        entity: 'Kingdom of Greece',
+        side: 'allies',
+        joined: '28 June 1917',
+        entry: 'The Venizelos government formally declared war on the Central Powers.',
+        role:
+          'Greek forces made a substantial contribution to the final Allied offensive on the Macedonian Front.',
       },
       {
         countries: ['USA'],
@@ -168,24 +242,24 @@ const warDefinitions = [
     years: '1939–1945',
     period: '1 September 1939 – 2 September 1945',
     summary:
-      'Principal powers and selected major contributors are shown; occupied states, colonial forces, and smaller belligerents are not exhaustive.',
+      'Principal belligerents and major contributors are shown. The 1937 Sino-Japanese War is included as the Asian theater’s precursor; present-day polygons and smaller forces are not exhaustive.',
     sides: {
       allies: {
-        label: 'Allies at entry',
+        label: 'Allied alignment',
         color: '#39788b',
         borderColor: '#245664',
         dashArray: null,
         pattern: 'solid',
       },
       axis: {
-        label: 'Axis at entry',
+        label: 'Axis alignment',
         color: '#c45a43',
         borderColor: '#913b2c',
         dashArray: '6 4',
         pattern: 'dashed',
       },
       coAxis: {
-        label: 'Axis co-belligerent',
+        label: 'Co-belligerent with Axis',
         color: '#c49335',
         borderColor: '#85601e',
         dashArray: '1 4',
@@ -227,11 +301,11 @@ const warDefinitions = [
         joined: '1 September 1939',
         entry: 'Poland entered the war resisting the German invasion.',
         role:
-          'After occupation, its government-in-exile, armed forces abroad, and underground resistance kept fighting.',
+          'After German and Soviet occupation, its government-in-exile, armed forces abroad, and underground resistance kept fighting.',
       },
       {
         countries: ['GBR'],
-        entity: 'United Kingdom & British Empire',
+        entity: 'United Kingdom',
         side: 'allies',
         joined: '3 September 1939',
         entry: 'The United Kingdom declared war on Germany after its ultimatum expired.',
@@ -257,6 +331,43 @@ const warDefinitions = [
           'It made major naval, air, and land contributions in Europe, North Africa, Southeast Asia, and the Pacific.',
       },
       {
+        countries: ['NZL'],
+        entity: 'Dominion of New Zealand',
+        side: 'allies',
+        joined: '3 September 1939',
+        entry: 'New Zealand declared war on Germany in its own right.',
+        role:
+          'It made major land, naval, and air contributions in the Mediterranean, Europe, and Pacific.',
+      },
+      {
+        countries: ['IND', 'PAK', 'BGD'],
+        entity: 'British India',
+        side: 'allies',
+        joined: '3 September 1939',
+        entry:
+          'British India entered with Britain; these present-day polygons approximate its wartime territory.',
+        role:
+          'Its armed forces grew to about 2.5 million and fought in Africa, Italy, the Middle East, Malaya, and Burma.',
+      },
+      {
+        countries: ['MMR'],
+        entity: 'British Burma',
+        side: 'allies',
+        joined: '3 September 1939',
+        entry: 'Burma entered as a British colony and became a major battlefield after Japan invaded.',
+        role:
+          'Allied forces, local troops, and resistance movements fought a long campaign to retake Burma from Japan.',
+      },
+      {
+        countries: ['ZAF'],
+        entity: 'Union of South Africa',
+        side: 'allies',
+        joined: '6 September 1939',
+        entry: 'South Africa declared war on Germany after a parliamentary decision.',
+        role:
+          'Its forces fought in East and North Africa, Madagascar, and Italy, while its ports supported Allied shipping.',
+      },
+      {
         countries: ['CAN'],
         entity: 'Dominion of Canada',
         side: 'allies',
@@ -264,6 +375,42 @@ const warDefinitions = [
         entry: 'Canada independently declared war on Germany.',
         role:
           'It contributed major naval, air, industrial, and ground forces in the Atlantic and Europe.',
+      },
+      {
+        countries: ['DNK'],
+        entity: 'Kingdom of Denmark',
+        side: 'allies',
+        joined: '9 April 1940',
+        entry: 'Germany invaded neutral Denmark, whose conventional forces surrendered that day.',
+        role:
+          'Denmark remained occupied, but resistance, merchant sailors, and Free Danish forces supported the Allies.',
+      },
+      {
+        countries: ['NOR'],
+        entity: 'Kingdom of Norway',
+        side: 'allies',
+        joined: '9 April 1940',
+        entry: 'Germany invaded neutral Norway.',
+        role:
+          'Its government-in-exile, armed forces, resistance, and large merchant fleet continued the war after occupation.',
+      },
+      {
+        countries: ['BEL'],
+        entity: 'Kingdom of Belgium',
+        side: 'allies',
+        joined: '10 May 1940',
+        entry: 'Germany invaded neutral Belgium.',
+        role:
+          'After the 18-day campaign, Belgian forces abroad, the resistance, and the Belgian Congo supported the Allies.',
+      },
+      {
+        countries: ['NLD'],
+        entity: 'Kingdom of the Netherlands',
+        side: 'allies',
+        joined: '10 May 1940',
+        entry: 'Germany invaded the neutral Netherlands.',
+        role:
+          'Its government-in-exile, navy, merchant fleet, resistance, and overseas forces continued fighting.',
       },
       {
         countries: ['ITA'],
@@ -276,11 +423,30 @@ const warDefinitions = [
           'It fought in Europe and Africa before the royal government switched sides; northern Italy remained under an Axis regime.',
       },
       {
+        countries: ['GRC'],
+        entity: 'Kingdom of Greece',
+        side: 'allies',
+        joined: '28 October 1940',
+        entry: 'Greece entered the war when Italy invaded from occupied Albania.',
+        role:
+          'It repelled Italy before German occupation; exiled forces, merchant shipping, and resistance kept fighting.',
+      },
+      {
+        countries: ['SVK'],
+        entity: 'Slovak Republic',
+        side: 'axis',
+        alignment: 'Axis; major anti-Axis uprising from 29 August 1944',
+        joined: '1 September 1939',
+        entry: 'Slovak forces joined Germany’s invasion of Poland.',
+        role:
+          'The Axis client state later fought the USSR; resistance forces launched the Slovak National Uprising in 1944.',
+      },
+      {
         countries: ['HUN'],
         entity: 'Kingdom of Hungary',
         side: 'axis',
-        joined: '20 November 1940',
-        entry: 'Hungary joined the Tripartite Pact.',
+        joined: '11 April 1941',
+        entry: 'Hungarian forces invaded Yugoslavia alongside the Axis.',
         role:
           'It participated in the invasions of Yugoslavia and the Soviet Union and remained a battlefield until 1945.',
       },
@@ -289,15 +455,35 @@ const warDefinitions = [
         entity: 'Kingdom of Romania',
         side: 'axis',
         alignment: 'Axis; Allies from 23 August 1944',
-        joined: '23 November 1940',
-        entry: 'Romania joined the Tripartite Pact.',
+        joined: '22 June 1941',
+        entry: 'Romania joined Germany’s invasion of the Soviet Union.',
         role:
           'It supplied oil and forces for the war against the USSR, then switched sides and fought through Central Europe.',
+      },
+      {
+        countries: ['SRB'],
+        entity: 'Kingdom of Yugoslavia & Yugoslav Partisans',
+        side: 'allies',
+        alignment: 'Allied Yugoslavia (present-day Serbia proxy)',
+        joined: '6 April 1941',
+        entry: 'Axis powers invaded Yugoslavia.',
+        role:
+          'After rapid occupation, rival resistance movements fought on; the Partisans became a major Allied army.',
+      },
+      {
+        countries: ['HRV'],
+        entity: 'Independent State of Croatia',
+        side: 'axis',
+        joined: '15 June 1941',
+        entry: 'The German-Italian client state joined the Tripartite Pact after Yugoslavia’s partition.',
+        role:
+          'Its forces fought the Partisans and supported the Axis, while many Croats also served in the resistance.',
       },
       {
         countries: ['FIN'],
         entity: 'Republic of Finland',
         side: 'coAxis',
+        alignment: 'Co-belligerent with Germany; fought Germany from September 1944',
         joined: '26 June 1941',
         entry: 'Finland entered the Continuation War against the Soviet Union.',
         role:
@@ -307,10 +493,40 @@ const warDefinitions = [
         countries: ['RUS'],
         entity: 'Soviet Union',
         side: 'allies',
-        joined: '22 June 1941',
-        entry: 'The Soviet Union entered the Allied war when Germany and its partners invaded.',
+        alignment: 'Invaded Poland in 1939; Allied power from 22 June 1941',
+        joined: '17 September 1939',
+        entry: 'The Soviet Union invaded eastern Poland under the secret terms of the Nazi-Soviet pact.',
         role:
-          'It bore the main European land war against Germany, captured Berlin, and later attacked Japan.',
+          'After earlier expansion and war with Finland, it bore the main European land war against Germany from June 1941 and later attacked Japan.',
+      },
+      {
+        countries: ['BGR'],
+        entity: 'Kingdom of Bulgaria',
+        side: 'axis',
+        alignment: 'Axis; Allies from 8 September 1944',
+        joined: '13 December 1941',
+        entry: 'Bulgaria declared war on Britain and the United States.',
+        role:
+          'It occupied Balkan territory without declaring war on the USSR, then switched sides and fought Germany.',
+      },
+      {
+        countries: ['PHL'],
+        entity: 'Commonwealth of the Philippines',
+        side: 'allies',
+        joined: '8 December 1941',
+        entry: 'Japanese forces attacked the U.S.-administered Philippine Commonwealth.',
+        role:
+          'Filipino and U.S. forces fought the invasion, and a large guerrilla resistance continued through occupation.',
+      },
+      {
+        countries: ['THA'],
+        entity: 'Kingdom of Thailand',
+        side: 'axis',
+        alignment: 'Japanese ally; Free Thai movement supported Allies',
+        joined: '8 December 1941',
+        entry: 'Thailand briefly resisted a Japanese invasion before agreeing to an alliance.',
+        role:
+          'Its government declared war on Britain and the United States, while the Free Thai movement aided the Allies.',
       },
       {
         countries: ['USA'],
@@ -320,6 +536,15 @@ const warDefinitions = [
         entry: 'Japan attacked Pearl Harbor; the United States declared war the next day.',
         role:
           'It became the leading Allied industrial, naval, air, and expeditionary power in both main theaters.',
+      },
+      {
+        countries: ['BRA'],
+        entity: 'United States of Brazil',
+        side: 'allies',
+        joined: '22 August 1942',
+        entry: 'Brazil declared war on Germany and Italy after Axis submarines sank Brazilian ships.',
+        role:
+          'It defended the South Atlantic, hosted strategic air bases, and sent an expeditionary force to Italy.',
       },
     ],
     source: {
@@ -333,7 +558,7 @@ const warDefinitions = [
     years: '1950–1953',
     period: '25 June 1950 – 27 July 1953',
     summary:
-      'Core belligerents and selected major UN combat contributors are shown; medical and smaller troop contributors are not exhaustive.',
+      'Core belligerents and all 16 states that deployed combat units under UN Command are shown. Medical-support states are not highlighted; fighting ended with an armistice, not a peace treaty.',
     sides: {
       unCommand: {
         label: 'South Korea & UN Command',
@@ -412,6 +637,42 @@ const warDefinitions = [
           'It contributed warships, air transport, pilots, and an infantry brigade that fought at Kapyong.',
       },
       {
+        countries: ['NLD'],
+        entity: 'Kingdom of the Netherlands',
+        side: 'unCommand',
+        joined: 'July 1950',
+        entry: 'A Dutch destroyer joined UN naval operations; an infantry battalion followed later in 1950.',
+        role:
+          'The Netherlands contributed rotating warships and a ground battalion that fought throughout the war.',
+      },
+      {
+        countries: ['NZL'],
+        entity: 'New Zealand',
+        side: 'unCommand',
+        joined: 'July 1950',
+        entry: 'New Zealand dispatched two frigates for UN service around Korea.',
+        role:
+          'It maintained a naval presence and fielded an artillery regiment that fought with Commonwealth forces.',
+      },
+      {
+        countries: ['FRA'],
+        entity: 'French Republic',
+        side: 'unCommand',
+        joined: 'July 1950',
+        entry: 'France assigned a naval vessel to UN operations; a volunteer infantry battalion followed.',
+        role:
+          'The French battalion fought with the U.S. 2nd Infantry Division in major campaigns through 1953.',
+      },
+      {
+        countries: ['PHL'],
+        entity: 'Republic of the Philippines',
+        side: 'unCommand',
+        joined: '19 September 1950',
+        entry: 'The first Philippine Expeditionary Force battalion arrived in Korea.',
+        role:
+          'Five Philippine battalion combat teams served in succession under UN Command.',
+      },
+      {
         countries: ['CHN'],
         entity: 'People’s Republic of China',
         side: 'north',
@@ -419,6 +680,15 @@ const warDefinitions = [
         entry: 'Chinese People’s Volunteers began their first major offensive.',
         role:
           'A mass Chinese ground intervention drove UN forces south and became the main opposing force.',
+      },
+      {
+        countries: ['ZAF'],
+        entity: 'Union of South Africa',
+        side: 'unCommand',
+        joined: '19 November 1950',
+        entry: 'No. 2 Squadron of the South African Air Force began combat operations from Japan.',
+        role:
+          'Its fighter pilots flew thousands of ground-attack and interdiction sorties with a U.S. fighter group.',
       },
       {
         countries: ['RUS'],
@@ -430,6 +700,14 @@ const warDefinitions = [
           'The USSR supplied equipment, advisers, air defenses, aircraft, and secretly deployed fighter pilots.',
       },
       {
+        countries: ['THA'],
+        entity: 'Kingdom of Thailand',
+        side: 'unCommand',
+        joined: 'November 1950',
+        entry: 'Thai ground and naval contingents arrived for service under UN Command.',
+        role: 'Thailand contributed an infantry regiment, warships, and an air transport unit.',
+      },
+      {
         countries: ['TUR'],
         entity: 'Republic of Turkey',
         side: 'unCommand',
@@ -437,10 +715,55 @@ const warDefinitions = [
         entry: 'The Turkish Brigade first entered direct combat during the UN withdrawal at Kunu-ri.',
         role: 'It fielded one of the largest non-Korean UN ground contingents.',
       },
+      {
+        countries: ['GRC'],
+        entity: 'Kingdom of Greece',
+        side: 'unCommand',
+        joined: 'December 1950',
+        entry: 'A Greek transport flight and infantry battalion deployed to Korea.',
+        role:
+          'Greek aircraft supported UN logistics while its battalion fought with U.S. formations.',
+      },
+      {
+        countries: ['BEL'],
+        entity: 'Kingdom of Belgium',
+        side: 'unCommand',
+        joined: '31 January 1951',
+        entry: 'The Belgian-Luxembourg battalion arrived in Korea.',
+        role:
+          'Belgian troops served as an infantry battalion in major defensive and offensive operations.',
+      },
+      {
+        countries: ['LUX'],
+        entity: 'Grand Duchy of Luxembourg',
+        side: 'unCommand',
+        joined: '31 January 1951',
+        entry: 'A Luxembourg platoon arrived as part of the Belgian-Luxembourg battalion.',
+        role:
+          'Two successive volunteer contingents fought within the combined battalion.',
+      },
+      {
+        countries: ['COL'],
+        entity: 'Republic of Colombia',
+        side: 'unCommand',
+        joined: 'May 1951',
+        entry: 'A Colombian frigate entered Korean waters; an infantry battalion followed in June.',
+        role:
+          'Colombia was the only Latin American state to provide UN combat forces, both naval and ground.',
+      },
+      {
+        countries: ['ETH'],
+        entity: 'Ethiopian Empire',
+        side: 'unCommand',
+        joined: 'May 1951',
+        entry: 'The first Ethiopian Kagnew Battalion arrived for service with UN Command.',
+        role:
+          'Three successive Kagnew battalions fought attached to the U.S. 7th Infantry Division.',
+      },
     ],
     source: {
-      label: 'Korean War sources',
-      url: 'https://www.britannica.com/event/Korean-War',
+      label: 'Korean Ministry of Patriots and Veterans Affairs contributor list',
+      url: 'https://mpva.go.kr/english/contents.do?key=1829',
     },
   },
   {
@@ -495,6 +818,24 @@ const warDefinitions = [
           'It hosted the coalition buildup and contributed substantial air and ground forces.',
       },
       {
+        countries: ['CAN'],
+        entity: 'Canada',
+        side: 'coalition',
+        joined: '24 August 1990',
+        entry: 'Three Canadian warships sailed for coalition operations in the Persian Gulf.',
+        role:
+          'Canada enforced the embargo and contributed CF-18 combat aircraft, naval forces, transports, and a field hospital.',
+      },
+      {
+        countries: ['SYR'],
+        entity: 'Syrian Arab Republic',
+        side: 'coalition',
+        joined: 'September 1990',
+        entry: 'Syria deployed an armored division to Saudi Arabia as part of the Arab coalition force.',
+        role:
+          'Its large ground contingent joined the coalition facing Iraqi forces in and around Kuwait.',
+      },
+      {
         countries: ['USA'],
         entity: 'United States of America',
         side: 'coalition',
@@ -534,6 +875,248 @@ const warDefinitions = [
     source: {
       label: 'Gulf War sources',
       url: 'https://history.state.gov/milestones/1989-1992/gulf-war',
+    },
+  },
+  {
+    id: 'vietnam-war',
+    name: 'Vietnam War',
+    years: '1954–1975',
+    period: '1954 – 30 April 1975',
+    summary:
+      'Principal belligerents and major foreign combat contributors are shown. No single start date is universally accepted. Vietnam’s present-day polygon represents opposing Vietnamese forces that the map cannot separate.',
+    sides: {
+      south: {
+        label: 'South Vietnam’s allies',
+        color: '#39788b',
+        borderColor: '#245664',
+        dashArray: null,
+        pattern: 'solid',
+      },
+      northSupport: {
+        label: 'North Vietnamese military support',
+        color: '#c45a43',
+        borderColor: '#913b2c',
+        dashArray: '6 4',
+        pattern: 'dashed',
+      },
+      divided: {
+        label: 'Divided Vietnam (polygon proxy)',
+        color: '#c49335',
+        borderColor: '#85601e',
+        dashArray: '1 4',
+        pattern: 'dotted',
+      },
+    },
+    participantGroups: [
+      {
+        countries: ['VNM'],
+        entity: 'North Vietnam, South Vietnam & Viet Cong',
+        side: 'divided',
+        alignment: 'Opposing Vietnamese forces (present-day polygon proxy)',
+        joined: '1954',
+        entry:
+          'The Geneva settlement ended French rule and provisionally divided Vietnam as rival states and insurgent forces emerged.',
+        role:
+          'North Vietnam and the Viet Cong fought to reunify the country under communist rule; South Vietnam fought to survive with foreign support until Saigon fell in 1975.',
+      },
+      {
+        countries: ['AUS'],
+        entity: 'Commonwealth of Australia',
+        side: 'south',
+        joined: 'July 1962',
+        entry: 'The Australian Army Training Team Vietnam began arriving in South Vietnam.',
+        role:
+          'Australia later deployed a task force and substantial ground, air, and naval forces.',
+      },
+      {
+        countries: ['USA'],
+        entity: 'United States of America',
+        side: 'south',
+        joined: '8 March 1965',
+        entry: 'U.S. Marines landed at Da Nang as the first regular American ground combat units.',
+        role:
+          'The United States was South Vietnam’s principal external ally and supplied most allied combat and logistical power.',
+      },
+      {
+        countries: ['KOR'],
+        entity: 'Republic of Korea',
+        side: 'south',
+        joined: 'September 1964',
+        entry: 'South Korea deployed its first military contingent to South Vietnam.',
+        role:
+          'It later supplied the largest non-U.S. foreign troop contingent, including two army divisions and a marine brigade.',
+      },
+      {
+        countries: ['NZL'],
+        entity: 'New Zealand',
+        side: 'south',
+        joined: 'June 1964',
+        entry: 'New Zealand deployed a non-combat engineer detachment; an artillery battery followed in 1965.',
+        role:
+          'New Zealand artillery, infantry companies, medical teams, and other personnel served with allied forces.',
+      },
+      {
+        countries: ['CHN'],
+        entity: 'People’s Republic of China',
+        side: 'northSupport',
+        joined: '1965',
+        entry: 'China began deploying anti-aircraft and engineering units to North Vietnam.',
+        role:
+          'Chinese personnel protected and repaired northern infrastructure while China supplied arms and matériel.',
+      },
+      {
+        countries: ['RUS'],
+        entity: 'Soviet Union',
+        side: 'northSupport',
+        joined: '1965',
+        entry: 'Soviet missile specialists began strengthening North Vietnam’s air defenses.',
+        role:
+          'The USSR supplied aircraft, missiles, weapons, matériel, and advisers to North Vietnam.',
+      },
+      {
+        countries: ['THA'],
+        entity: 'Kingdom of Thailand',
+        side: 'south',
+        joined: '1967',
+        entry: 'Thailand deployed the Queen’s Cobras volunteer regiment to South Vietnam.',
+        role:
+          'It later fielded a division-sized force, while Thai bases supported the wider U.S. air campaign.',
+      },
+    ],
+    source: {
+      label: 'Encyclopaedia Britannica Vietnam War overview',
+      url: 'https://www.britannica.com/event/Vietnam-War',
+    },
+  },
+  {
+    id: 'afghanistan-war',
+    name: 'War in Afghanistan',
+    years: '2001–2021',
+    period: '7 October 2001 – 30 August 2021',
+    summary:
+      'Opposing Afghan forces and selected major coalition combat contributors are shown. Afghanistan’s present-day polygon represents a changing war between the Taliban, al-Qaeda, the Northern Alliance, and the later Afghan republic.',
+    sides: {
+      coalition: {
+        label: 'Afghan government’s coalition allies',
+        color: '#39788b',
+        borderColor: '#245664',
+        dashArray: null,
+        pattern: 'solid',
+      },
+      contested: {
+        label: 'Contested Afghanistan (polygon proxy)',
+        color: '#c49335',
+        borderColor: '#85601e',
+        dashArray: '1 4',
+        pattern: 'dotted',
+      },
+    },
+    participantGroups: [
+      {
+        countries: ['AFG'],
+        entity: 'Taliban, al-Qaeda, Northern Alliance & Afghan republic',
+        side: 'contested',
+        alignment: 'Opposing Afghan forces (present-day polygon proxy)',
+        joined: '7 October 2001',
+        entry:
+          'U.S. and British strikes opened the intervention against Taliban and al-Qaeda targets alongside anti-Taliban Afghan forces.',
+        role:
+          'The Taliban regime fell in 2001 but regrouped against the new republic and foreign coalition, retaking Kabul in August 2021.',
+      },
+      {
+        countries: ['USA'],
+        entity: 'United States of America',
+        side: 'coalition',
+        joined: '7 October 2001',
+        entry: 'The United States opened Operation Enduring Freedom with air strikes.',
+        role:
+          'It led the coalition and conducted counterterrorism, counterinsurgency, training, and support missions until withdrawal.',
+      },
+      {
+        countries: ['GBR'],
+        entity: 'United Kingdom',
+        side: 'coalition',
+        joined: '7 October 2001',
+        entry: 'British forces joined the opening strikes and subsequent ground campaign.',
+        role:
+          'Britain initially led ISAF and later fought a sustained campaign in Helmand while training Afghan forces.',
+      },
+      {
+        countries: ['AUS'],
+        entity: 'Commonwealth of Australia',
+        side: 'coalition',
+        joined: '11 October 2001',
+        entry: 'Australia began Operation Slipper, its contribution to the coalition campaign.',
+        role:
+          'It deployed special operations, air, logistical, reconstruction, combat, and training forces, especially in Uruzgan.',
+      },
+      {
+        countries: ['CAN'],
+        entity: 'Canada',
+        side: 'coalition',
+        joined: 'October 2001',
+        entry: 'Canada began Operation Apollo and deployed naval, air, and special operations forces.',
+        role:
+          'Canada later fielded ground forces, led demanding combat operations in Kandahar, and trained Afghan forces.',
+      },
+      {
+        countries: ['FRA'],
+        entity: 'French Republic',
+        side: 'coalition',
+        joined: 'October 2001',
+        entry: 'France began deploying naval and air forces in support of coalition operations.',
+        role:
+          'France contributed naval aviation, air, special operations, and ground forces before ending its combat mission in 2012.',
+      },
+      {
+        countries: ['DEU'],
+        entity: 'Federal Republic of Germany',
+        side: 'coalition',
+        joined: 'January 2002',
+        entry: 'German forces deployed with the first UN-authorized ISAF contingents.',
+        role:
+          'Germany led security and reconstruction operations in northern Afghanistan and trained Afghan forces.',
+      },
+      {
+        countries: ['ITA'],
+        entity: 'Italian Republic',
+        side: 'coalition',
+        joined: 'January 2002',
+        entry: 'Italian forces deployed with the first ISAF contingents.',
+        role:
+          'Italy later led ISAF’s western regional command and contributed combat, reconstruction, and training forces.',
+      },
+      {
+        countries: ['DNK'],
+        entity: 'Kingdom of Denmark',
+        side: 'coalition',
+        joined: 'January 2002',
+        entry: 'Denmark deployed special operations and air personnel to the U.S.-led campaign.',
+        role:
+          'It later fielded a sustained combat contingent alongside British forces in Helmand.',
+      },
+      {
+        countries: ['NLD'],
+        entity: 'Kingdom of the Netherlands',
+        side: 'coalition',
+        joined: '2002',
+        entry: 'Dutch forces joined Operation Enduring Freedom and ISAF missions.',
+        role:
+          'The Netherlands contributed air, naval, special operations, reconstruction, and combat forces, notably in Uruzgan.',
+      },
+      {
+        countries: ['POL'],
+        entity: 'Republic of Poland',
+        side: 'coalition',
+        joined: 'March 2002',
+        entry: 'Poland deployed its first military contingent to Afghanistan.',
+        role:
+          'It later led a large combat task force responsible for security operations in Ghazni province.',
+      },
+    ],
+    source: {
+      label: 'NATO Afghanistan timeline',
+      url: 'https://www.nato.int/en/what-we-do/operations-and-missions/nato-and-afghanistan',
     },
   },
 ];

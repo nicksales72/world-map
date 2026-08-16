@@ -30,6 +30,28 @@ const warSource = document.querySelector('#war-source');
 const toggleWarDossierButton = document.querySelector('#toggle-war-dossier');
 const warDossierToggleIcon = document.querySelector('#war-dossier-toggle-icon');
 const closeWarLayerButton = document.querySelector('#close-war-layer');
+const themeToggleButton = document.querySelector('#theme-toggle');
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+const rootElement = document.documentElement;
+
+const THEME_STORAGE_KEY = 'field-atlas-theme';
+const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const savedTheme = (() => {
+  try {
+    const value = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return value === 'light' || value === 'dark' ? value : null;
+  } catch {
+    return null;
+  }
+})();
+let followsSystemTheme = savedTheme === null;
+let activeTheme =
+  savedTheme ??
+  (rootElement.dataset.theme === 'light' || rootElement.dataset.theme === 'dark'
+    ? rootElement.dataset.theme
+    : systemThemeQuery.matches
+      ? 'dark'
+      : 'light');
 
 const numberFormat = new Intl.NumberFormat('en-US');
 const compactNumberFormat = new Intl.NumberFormat('en-US', {
@@ -86,6 +108,109 @@ const areaRanks = new Map(
     .map((country, index) => [country.cca3, index + 1]),
 );
 
+const mapThemes = {
+  light: {
+    tileStyle: 'light',
+    themeColor: '#123438',
+    equator: '#587377',
+    waterBoundary: '#c9563f',
+    defaultCountry: {
+      color: '#587377',
+      weight: 0.7,
+      opacity: 0.82,
+      fillColor: '#e0a93d',
+      fillOpacity: 0.025,
+      dashArray: null,
+    },
+    mutedCountry: {
+      color: '#738785',
+      weight: 0.55,
+      opacity: 0.34,
+      fillColor: '#d6ddd8',
+      fillOpacity: 0.035,
+      dashArray: null,
+    },
+    hoverCountry: {
+      color: '#c9563f',
+      weight: 1.35,
+      opacity: 1,
+      fillColor: '#ec7659',
+      fillOpacity: 0.16,
+      dashArray: null,
+    },
+    mutedHoverCountry: {
+      color: '#536d6d',
+      weight: 1.1,
+      opacity: 0.8,
+      fillColor: '#bcc8c3',
+      fillOpacity: 0.17,
+      dashArray: null,
+    },
+    selectedCountry: {
+      color: '#a83c2c',
+      weight: 2.1,
+      opacity: 1,
+      fillColor: '#e56649',
+      fillOpacity: 0.28,
+      dashArray: null,
+    },
+    activeOutline: '#153639',
+    mutedSelection: '#aabbb5',
+  },
+  dark: {
+    tileStyle: 'dark',
+    themeColor: '#101a1c',
+    equator: '#8da6a5',
+    waterBoundary: '#f07b60',
+    defaultCountry: {
+      color: '#91aaa8',
+      weight: 0.75,
+      opacity: 0.84,
+      fillColor: '#e0b259',
+      fillOpacity: 0.045,
+      dashArray: null,
+    },
+    mutedCountry: {
+      color: '#78908e',
+      weight: 0.6,
+      opacity: 0.46,
+      fillColor: '#81938e',
+      fillOpacity: 0.055,
+      dashArray: null,
+    },
+    hoverCountry: {
+      color: '#ff8a6f',
+      weight: 1.45,
+      opacity: 1,
+      fillColor: '#ef795e',
+      fillOpacity: 0.24,
+      dashArray: null,
+    },
+    mutedHoverCountry: {
+      color: '#b6c8c4',
+      weight: 1.15,
+      opacity: 0.9,
+      fillColor: '#849792',
+      fillOpacity: 0.2,
+      dashArray: null,
+    },
+    selectedCountry: {
+      color: '#ff9b82',
+      weight: 2.2,
+      opacity: 1,
+      fillColor: '#ed7357',
+      fillOpacity: 0.38,
+      dashArray: null,
+    },
+    activeOutline: '#f0eee5',
+    mutedSelection: '#9eb2ad',
+  },
+};
+
+const getMapTheme = () => mapThemes[activeTheme];
+const getCartoTileUrl = (theme, layer) =>
+  `https://{s}.basemaps.cartocdn.com/${mapThemes[theme].tileStyle}_${layer}/{z}/{x}/{y}{r}.png`;
+
 const map = L.map(mapElement, {
   center: [18, 7],
   zoom: 2,
@@ -116,28 +241,37 @@ map.createPane('waterLabels');
 map.getPane('waterLabels').style.zIndex = 460;
 map.getPane('waterLabels').style.pointerEvents = 'none';
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-  subdomains: 'abcd',
-  maxZoom: 20,
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-}).addTo(map);
+const createTileLayers = (theme) => ({
+  base: L.tileLayer(getCartoTileUrl(theme, 'nolabels'), {
+    subdomains: 'abcd',
+    maxZoom: 20,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  }),
+  labels: L.tileLayer(getCartoTileUrl(theme, 'only_labels'), {
+    subdomains: 'abcd',
+    maxZoom: 20,
+    pane: 'labels',
+  }),
+});
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-  subdomains: 'abcd',
-  maxZoom: 20,
-  pane: 'labels',
-}).addTo(map);
+const tileLayersByTheme = {
+  light: createTileLayers('light'),
+  dark: createTileLayers('dark'),
+};
+let activeTileLayers = tileLayersByTheme[activeTheme];
+activeTileLayers.base.addTo(map);
+activeTileLayers.labels.addTo(map);
 
 map.attributionControl.setPrefix(false);
 
-L.polyline(
+const equatorLayer = L.polyline(
   [
     [0, -180],
     [0, 180],
   ],
   {
-    color: '#587377',
+    color: getMapTheme().equator,
     weight: 1,
     opacity: 0.24,
     dashArray: '3 6',
@@ -149,7 +283,7 @@ const waterBoundaryLayer = L.layerGroup(
   oceanBoundaryLines.map(({ coordinates }) =>
     L.polyline(coordinates, {
       pane: 'waterBoundaries',
-      color: '#c9563f',
+      color: getMapTheme().waterBoundary,
       weight: 1,
       opacity: 0.34,
       dashArray: '2 7',
@@ -229,32 +363,14 @@ const lookupCountry = (geoFeature) => {
   );
 };
 
-const defaultStyle = {
-  color: '#587377',
-  weight: 0.7,
-  opacity: 0.82,
-  fillColor: '#e0a93d',
-  fillOpacity: 0.025,
-  dashArray: null,
-};
-
-const warMutedStyle = {
-  color: '#738785',
-  weight: 0.55,
-  opacity: 0.34,
-  fillColor: '#d6ddd8',
-  fillOpacity: 0.035,
-  dashArray: null,
-};
-
 const getWarParticipant = (country) =>
   country && activeWar ? activeWar.participants[country.cca3] ?? null : null;
 
 const baseStyle = (geoFeature) => {
-  if (!activeWar) return { ...defaultStyle };
+  if (!activeWar) return { ...getMapTheme().defaultCountry };
 
   const participant = getWarParticipant(lookupCountry(geoFeature));
-  if (!participant) return { ...warMutedStyle };
+  if (!participant) return { ...getMapTheme().mutedCountry };
 
   const side = activeWar.sides[participant.side];
   return {
@@ -267,41 +383,14 @@ const baseStyle = (geoFeature) => {
   };
 };
 
-const hoverStyle = {
-  color: '#c9563f',
-  weight: 1.35,
-  opacity: 1,
-  fillColor: '#ec7659',
-  fillOpacity: 0.16,
-  dashArray: null,
-};
-
-const warMutedHoverStyle = {
-  color: '#536d6d',
-  weight: 1.1,
-  opacity: 0.8,
-  fillColor: '#bcc8c3',
-  fillOpacity: 0.17,
-  dashArray: null,
-};
-
-const selectedStyle = {
-  color: '#a83c2c',
-  weight: 2.1,
-  opacity: 1,
-  fillColor: '#e56649',
-  fillOpacity: 0.28,
-  dashArray: null,
-};
-
 const getHoverCountryStyle = (country) => {
-  if (!activeWar) return hoverStyle;
+  if (!activeWar) return getMapTheme().hoverCountry;
 
   const participant = getWarParticipant(country);
-  if (!participant) return warMutedHoverStyle;
+  if (!participant) return getMapTheme().mutedHoverCountry;
 
   return {
-    color: '#153639',
+    color: getMapTheme().activeOutline,
     weight: 1.8,
     opacity: 1,
     fillColor: activeWar.sides[participant.side].color,
@@ -311,22 +400,22 @@ const getHoverCountryStyle = (country) => {
 };
 
 const getSelectedCountryStyle = (country) => {
-  if (!activeWar) return selectedStyle;
+  if (!activeWar) return getMapTheme().selectedCountry;
 
   const participant = getWarParticipant(country);
   if (!participant) {
     return {
-      color: '#153639',
+      color: getMapTheme().activeOutline,
       weight: 2.1,
       opacity: 1,
-      fillColor: '#aabbb5',
+      fillColor: getMapTheme().mutedSelection,
       fillOpacity: 0.3,
       dashArray: null,
     };
   }
 
   return {
-    color: '#153639',
+    color: getMapTheme().activeOutline,
     weight: 2.25,
     opacity: 1,
     fillColor: activeWar.sides[participant.side].color,
@@ -344,6 +433,43 @@ const refreshCountryStyles = () => {
     selectedLayer.bringToFront();
   }
 };
+
+const setTheme = (theme, { persist = false } = {}) => {
+  const nextTheme = theme === 'dark' ? 'dark' : 'light';
+  const didChange = activeTheme !== nextTheme;
+  activeTheme = nextTheme;
+  rootElement.dataset.theme = activeTheme;
+  themeColorMeta.content = getMapTheme().themeColor;
+
+  const nextThemeLabel = `Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} mode`;
+  themeToggleButton.setAttribute('aria-label', nextThemeLabel);
+  themeToggleButton.setAttribute('aria-pressed', String(activeTheme === 'dark'));
+  themeToggleButton.title = nextThemeLabel;
+
+  if (persist) {
+    followsSystemTheme = false;
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, activeTheme);
+    } catch {
+      // The selected theme still applies for the current session.
+    }
+  }
+
+  if (!didChange) return;
+
+  activeTileLayers.labels.removeFrom(map);
+  activeTileLayers.base.removeFrom(map);
+  activeTileLayers = tileLayersByTheme[activeTheme];
+  activeTileLayers.base.addTo(map);
+  activeTileLayers.labels.addTo(map);
+  equatorLayer.setStyle({ color: getMapTheme().equator });
+  waterBoundaryLayer.eachLayer((layer) => {
+    layer.setStyle({ color: getMapTheme().waterBoundary });
+  });
+  refreshCountryStyles();
+};
+
+setTheme(activeTheme);
 
 const prepareBoundaryGeometry = (geoData) => {
   const cleanRing = (ring) => {
@@ -932,6 +1058,12 @@ toggleWarDossierButton.addEventListener('click', () => {
 closeWarLayerButton.addEventListener('click', () => {
   setWarLayer('');
   warLayerSelect.focus();
+});
+themeToggleButton.addEventListener('click', () => {
+  setTheme(activeTheme === 'dark' ? 'light' : 'dark', { persist: true });
+});
+systemThemeQuery.addEventListener('change', (event) => {
+  if (followsSystemTheme) setTheme(event.matches ? 'dark' : 'light');
 });
 
 map.on('zoom moveend', () => {

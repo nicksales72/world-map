@@ -8,6 +8,22 @@
       content="An interactive world atlas with detailed country boundaries and facts."
     />
     <meta name="theme-color" content="#123438" />
+    <script>
+      (() => {
+        let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+        try {
+          const savedTheme = window.localStorage.getItem('field-atlas-theme');
+          if (savedTheme === 'light' || savedTheme === 'dark') theme = savedTheme;
+        } catch {
+          // The system preference remains the fallback when storage is unavailable.
+        }
+
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').content =
+          theme === 'dark' ? '#101a1c' : '#123438';
+      })();
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>Field Atlas — Interactive World Map</title>
   </head>
@@ -23,7 +39,25 @@
             </svg>
             <span>Field Atlas</span>
           </a>
-          <span class="edition">No. 01 / World</span>
+          <div class="brand-actions">
+            <span class="edition">No. 01 / World</span>
+            <button
+              id="theme-toggle"
+              class="theme-toggle"
+              type="button"
+              aria-label="Switch to dark mode"
+              aria-pressed="false"
+              title="Switch to dark mode"
+            >
+              <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 15.2A8.2 8.2 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2Z" />
+              </svg>
+              <svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3.5" />
+                <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" />
+              </svg>
+            </button>
+          </div>
         </header>
 
         <section class="intro">
@@ -185,6 +219,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 6.5h5l3 3h8M4 17.5h5l3-3h8" />
               <path class="map-tools__guide-line" d="M12 3v18" />
+              <path class="map-tools__guide-slash" d="m5 4 14 16" />
             </svg>
           </button>
         </div>

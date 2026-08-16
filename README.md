@@ -20,3 +20,6 @@ The optional war layers are curated views of principal belligerents and major co
 ![Main ScreenShot](images/main.png)
 ![World Map Fact](images/fact.png)
 ![War Mode](images/war.png)
+![Dark Main ScreenShot](images/main-dark.png)
+![Dark World Map Fact](images/fact-dark.png)
+![Dark War Mode](images/war-dark.png)

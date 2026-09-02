@@ -10,8 +10,6 @@ First, request a [CARTO basemap API key](https://carto.com/basemaps/apikey), the
 VITE_CARTO_API_KEY=your_key_here
 ```
 
-Restart the development server after changing `.env`. The key is included in browser tile requests, so use it only for CARTO basemaps and do not treat it as a server-side secret.
-
 Then run:
 
 ```shell

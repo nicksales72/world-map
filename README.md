@@ -4,10 +4,18 @@ A completely vibecoded interactive world map; it includes fun facts, country cap
 
 # Usage 
 
+First, request a [CARTO basemap API key](https://carto.com/basemaps/apikey), then add it to `.env`:
+
 ```shell
 npm install 
 npm run dev
 ```
+
+```dotenv
+VITE_CARTO_API_KEY=your_key_here
+```
+
+Restart the development server after changing `.env`. The key is included in browser tile requests, so use it only for CARTO basemaps and do not treat it as a server-side secret.
 
 # Information I Did Not Write or Review
 

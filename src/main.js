@@ -208,8 +208,10 @@ const mapThemes = {
 };
 
 const getMapTheme = () => mapThemes[activeTheme];
+const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY?.trim();
+const cartoKeyQuery = cartoApiKey ? `?key=${encodeURIComponent(cartoApiKey)}` : '';
 const getCartoTileUrl = (theme, layer) =>
-  `https://{s}.basemaps.cartocdn.com/${mapThemes[theme].tileStyle}_${layer}/{z}/{x}/{y}{r}.png`;
+  `https://{s}.basemaps.cartocdn.com/${mapThemes[theme].tileStyle}_${layer}/{z}/{x}/{y}{r}.png${cartoKeyQuery}`;
 
 const map = L.map(mapElement, {
   center: [18, 7],
